@@ -1,0 +1,15 @@
+{
+  "name": "diemecommerce.web",
+  "version": "1.0.0",
+  "description": "Customer-facing web application for DiemEcommerce",
+  "scripts": {
+    "build:css": "tailwindcss -i ./wwwroot/css/site.src.css -o ./wwwroot/css/site.css",
+    "watch:css": "tailwindcss -i ./wwwroot/css/site.src.css -o ./wwwroot/css/site.css --watch"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "@tailwindcss/forms": "^0.5.7"
+  }
+}

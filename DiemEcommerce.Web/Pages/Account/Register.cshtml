@@ -1,0 +1,76 @@
+@page
+@model DiemEcommerce.Web.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-lg mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="text-xl font-semibold">Create a New Account</h1>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label asp-for="Input.FirstName" class="form-label">First Name</label>
+                            <input asp-for="Input.FirstName" class="form-input" />
+                            <span asp-validation-for="Input.FirstName" class="form-error"></span>
+                        </div>
+                        <div>
+                            <label asp-for="Input.LastName" class="form-label">Last Name</label>
+                            <input asp-for="Input.LastName" class="form-input" />
+                            <span asp-validation-for="Input.LastName" class="form-error"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="Input.Email" class="form-label">Email</label>
+                        <input asp-for="Input.Email" class="form-input" type="email" />
+                        <span asp-validation-for="Input.Email" class="form-error"></span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="Input.Username" class="form-label">Username</label>
+                        <input asp-for="Input.Username" class="form-input" />
+                        <span asp-validation-for="Input.Username" class="form-error"></span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="Input.PhoneNumber" class="form-label">Phone Number</label>
+                        <input asp-for="Input.PhoneNumber" class="form-input" type="tel" />
+                        <span asp-validation-for="Input.PhoneNumber" class="form-error"></span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="Input.Password" class="form-label">Password</label>
+                        <input asp-for="Input.Password" class="form-input" type="password" />
+                        <span asp-validation-for="Input.Password" class="form-error"></span>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label asp-for="Input.ConfirmPassword" class="form-label">Confirm Password</label>
+                        <input asp-for="Input.ConfirmPassword" class="form-input" type="password" />
+                        <span asp-validation-for="Input.ConfirmPassword" class="form-error"></span>
+                    </div>
+                    
+                    <div>
+                        <button type="submit" class="btn btn-primary w-full">Register</button>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <span class="text-gray-600">Already have an account?</span>
+                        <a asp-page="./Login" class="text-primary hover:underline">Login here</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

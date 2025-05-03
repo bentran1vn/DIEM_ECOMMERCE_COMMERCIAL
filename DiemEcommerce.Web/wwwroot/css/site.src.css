@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .btn {
+        @apply px-4 py-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+    }
+
+    .btn-primary {
+        @apply bg-primary text-white hover:bg-primary-dark focus:ring-primary;
+    }
+
+    .btn-secondary {
+        @apply bg-secondary text-white hover:bg-gray-600 focus:ring-secondary;
+    }
+
+    .btn-accent {
+        @apply bg-accent text-white hover:bg-orange-600 focus:ring-accent;
+    }
+
+    .btn-danger {
+        @apply bg-danger text-white hover:bg-red-600 focus:ring-danger;
+    }
+
+    .btn-success {
+        @apply bg-success text-white hover:bg-green-600 focus:ring-success;
+    }
+
+    .btn-outline {
+        @apply bg-transparent border hover:text-white focus:ring-gray-500;
+    }
+
+    .btn-outline-primary {
+        @apply btn-outline border-primary text-primary hover:bg-primary;
+    }
+
+    .form-input {
+        @apply w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50;
+    }
+
+    .form-label {
+        @apply block text-sm font-medium text-gray-700 mb-1;
+    }
+
+    .form-error {
+        @apply mt-1 text-sm text-danger;
+    }
+
+    .card {
+        @apply bg-white rounded-lg shadow-md overflow-hidden;
+    }
+
+    .card-header {
+        @apply px-6 py-4 bg-gray-50 border-b border-gray-200;
+    }
+
+    .card-body {
+        @apply p-6;
+    }
+
+    .card-footer {
+        @apply px-6 py-4 bg-gray-50 border-t border-gray-200;
+    }
+}

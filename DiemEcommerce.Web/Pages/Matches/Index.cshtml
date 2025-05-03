@@ -1,0 +1,167 @@
+@page
+@model DiemEcommerce.Web.Pages.Matches.IndexModel
+@{
+    ViewData["Title"] = "Browse Matches";
+}
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Browse Matches</h1>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <!-- Sidebar with Categories and Filters -->
+        <div class="lg:col-span-1">
+            <div class="space-y-6">
+                <!-- Search Box -->
+                <div class="card">
+                    <div class="card-body">
+                        <form method="get">
+                            <div class="mb-4">
+                                <label class="form-label">Search</label>
+                                <div class="relative">
+                                    <input type="text" name="searchTerm" value="@Model.SearchTerm" class="form-input pr-10" placeholder="Search matches...">
+                                    <button type="submit" class="absolute inset-y-0 right-0 px-3 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-500">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            @if (Model.CategoryId.HasValue)
+                            {
+                                <input type="hidden" name="categoryId" value="@Model.CategoryId" />
+                            }
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Categories -->
+                @await Component.InvokeAsync("CategoryMenu")
+            </div>
+        </div>
+        
+        <!-- Match Grid -->
+        <div class="lg:col-span-3">
+            <!-- Active Filters -->
+            @if (!string.IsNullOrEmpty(Model.SearchTerm) || Model.CategoryId.HasValue)
+            {
+                <div class="flex flex-wrap items-center gap-2 mb-4">
+                    <span class="text-gray-600">Active filters:</span>
+                    @if (!string.IsNullOrEmpty(Model.SearchTerm))
+                    {
+                        <a href="@(Model.CategoryId.HasValue ? Url.Page("./Index", new { categoryId = Model.CategoryId }) : Url.Page("./Index"))" 
+                           class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 hover:bg-gray-200">
+                            Search: @Model.SearchTerm
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ml-1">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </a>
+                    }
+                    @if (Model.CategoryId.HasValue)
+                    {
+                        <a href="@(!string.IsNullOrEmpty(Model.SearchTerm) ? Url.Page("./Index", new { searchTerm = Model.SearchTerm }) : Url.Page("./Index"))" 
+                           class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 hover:bg-gray-200">
+                            Category: @Model.CategoryName
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ml-1">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </a>
+                    }
+                    <a href="@Url.Page("./Index")" class="text-primary hover:underline text-sm ml-2">Clear all</a>
+                </div>
+            }
+            
+            <!-- Matches Display -->
+            @if (Model.Matches != null && Model.Matches.Items.Any())
+            {
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach (var match in Model.Matches.Items)
+                    {
+                        <div class="card hover:shadow-lg transition-shadow">
+                            <div class="relative aspect-square overflow-hidden">
+                                @if (match.CoverImages.Any())
+                                {
+                                    <img src="@match.CoverImages.First().Url" alt="@match.Name" class="w-full h-full object-cover">
+                                }
+                                else
+                                {
+                                    <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                                        <span class="text-gray-500">No image</span>
+                                    </div>
+                                }
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-semibold text-lg mb-1 truncate">@match.Name</h3>
+                                <p class="text-gray-500 text-sm mb-2">@match.FactoryName</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-primary font-bold">$@match.Price</span>
+                                    <form method="post" asp-page-handler="AddToCart" asp-route-matchId="@match.Id">
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            <a asp-page="./Details" asp-route-id="@match.Id" class="absolute inset-0" aria-label="View details"></a>
+                        </div>
+                    }
+                </div>
+                
+                <!-- Pagination -->
+                @if (Model.Matches.TotalPages > 1)
+                {
+                    <div class="flex justify-center mt-8">
+                        <div class="inline-flex rounded-md shadow-sm">
+                            @if (Model.Matches.HasPreviousPage)
+                            {
+                                <a href="@Url.Page("./Index", new { pageIndex = Model.Matches.PageIndex - 1, searchTerm = Model.SearchTerm, categoryId = Model.CategoryId })" 
+                                   class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50">
+                                    Previous
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="px-4 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-300 rounded-l-md">
+                                    Previous
+                                </span>
+                            }
+                            
+                            <span class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border-t border-b border-gray-300">
+                                Page @Model.Matches.PageIndex of @Model.Matches.TotalPages
+                            </span>
+                            
+                            @if (Model.Matches.HasNextPage)
+                            {
+                                <a href="@Url.Page("./Index", new { pageIndex = Model.Matches.PageIndex + 1, searchTerm = Model.SearchTerm, categoryId = Model.CategoryId })" 
+                                   class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50">
+                                    Next
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="px-4 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-300 rounded-r-md">
+                                    Next
+                                </span>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="card">
+                    <div class="card-body text-center py-12">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto text-gray-400 mb-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 16.318A4.486 4.486 0 0 0 12.016 15a4.486 4.486 0 0 0-3.198 1.318M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" />
+                        </svg>
+                        <h3 class="text-xl font-medium mb-2">No matches found</h3>
+                        <p class="text-gray-500 mb-4">Try adjusting your search criteria or browse all matches.</p>
+                        <a asp-page="./Index" class="btn btn-primary">View All Matches</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

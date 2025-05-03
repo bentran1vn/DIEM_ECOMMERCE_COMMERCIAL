@@ -1,0 +1,20 @@
+@model List<DiemEcommerce.Web.Models.Category.CategoryViewModel>
+
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="bg-primary text-white px-4 py-3">
+        <h2 class="font-medium">Categories</h2>
+    </div>
+    <div class="p-3">
+        <ul class="space-y-1">
+            @foreach (var category in Model)
+            {
+                <li>
+                    <a href="@Url.Page("/Matches/Index", new { categoryId = category.Id })" 
+                       class="block px-3 py-2 rounded hover:bg-gray-100 transition-colors">
+                        @category.Name
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

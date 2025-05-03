@@ -478,6 +478,6 @@ Temporary Items
 # End of https://www.toptal.com/developers/gitignore/api/macos,rider,intellij,aspnetcore,dotnetcore
 
 DiemEcommerce.Web/appsettings.json
-DiemEcommerce.Web/aappsettings.Development.json
+DiemEcommerce.Web/appsettings.Development.json
 .env
 DiemEcommerce.Web/logs

@@ -34,7 +34,9 @@ public class OrderService : IOrderService
         
         string endpoint = $"orders?{string.Join("&", queryParams)}";
         
-        return await _apiHelper.GetAsync<PaginatedList<OrderViewModel>>(endpoint);
+        var result = await _apiHelper.GetAsync<ApiResponse<PaginatedList<OrderViewModel>>>(endpoint);
+
+        return result.Value;
     }
 
     public async Task<OrderDetailViewModel?> GetOrderByIdAsync(Guid orderId)

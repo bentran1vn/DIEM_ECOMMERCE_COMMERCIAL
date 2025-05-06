@@ -1,0 +1,134 @@
+@page "{id:guid}"
+@model DiemEcommerce.Web.Pages.Orders.ConfirmationModel
+@{
+ViewData["Title"] = "Order Confirmation";
+}
+
+<div class="container mx-auto px-4 py-8">
+    @if (Model.Order != null)
+    {
+    <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-success/20 text-success rounded-full mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold mb-2">Order Confirmed!</h1>
+            <p class="text-gray-600">Thank you for your purchase. Your order has been received.</p>
+        </div>
+
+        <div class="card mb-6">
+            <div class="card-header">
+                <h2 class="font-medium">Order Details</h2>
+            </div>
+            <div class="card-body">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-500">Order Number</p>
+                        <p class="font-medium">@Model.Order.Id</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Date</p>
+                        <p class="font-medium">@Model.Order.CreatedOnUtc.ToString("MMM dd, yyyy")</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Total Amount</p>
+                        <p class="font-medium">$@Model.Order.TotalPrice.ToString("0.00")</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Status</p>
+                        <p class="font-medium">
+                            @if (Model.Order.Status == "Pending")
+                            {
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        Pending
+                                    </span>
+                            }
+                            else if (Model.Order.Status == "Success")
+                            {
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Success
+                                    </span>
+                            }
+                            else
+                            {
+                            <span>@Model.Order.Status</span>
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Order.IsQr)
+        {
+        <div class="card mb-6">
+            <div class="card-header">
+                <h2 class="font-medium">Payment Information</h2>
+            </div>
+            <div class="card-body text-center">
+                <p class="mb-4">Please scan the QR code below to complete your payment.</p>
+                <img src="@Model.Order.QrUrl" alt="QR Code" class="mx-auto max-w-xs mb-4">
+                <div class="max-w-xs mx-auto bg-gray-50 p-4 rounded-lg">
+                    <div class="mb-2">
+                        <div class="text-sm text-gray-500">Bank Name</div>
+                        <div class="font-medium">@Model.Order.SystemBankName</div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="text-sm text-gray-500">Account Number</div>
+                        <div class="font-medium">@Model.Order.SystemBankAccount</div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-500">Description</div>
+                        <div class="font-medium">@Model.Order.SystemBankDescription</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+
+        <div class="card mb-6">
+            <div class="card-header">
+                <h2 class="font-medium">Shipping Information</h2>
+            </div>
+            <div class="card-body">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-500">Email</p>
+                        <p class="font-medium">@Model.Order.Email</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Phone</p>
+                        <p class="font-medium">@Model.Order.Phone</p>
+                    </div>
+                    <div class="md:col-span-2">
+                        <p class="text-sm text-gray-500">Address</p>
+                        <p class="font-medium">@Model.Order.Address</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <div class="space-x-4">
+                <a asp-page="/Orders/Index" class="btn btn-primary">View All Orders</a>
+                <a asp-page="/Index" class="btn btn-outline-primary">Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+    }
+    else
+    {
+    <div class="card max-w-3xl mx-auto">
+        <div class="card-body text-center py-12">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto text-gray-400 mb-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+            </svg>
+            <h2 class="text-2xl font-bold mb-2">Order not found</h2>
+            <p class="text-gray-500 mb-4">The order you're looking for doesn't exist or has been removed.</p>
+            <a asp-page="/Orders/Index" class="btn btn-primary">View Your Orders</a>
+        </div>
+    </div>
+    }
+</div>

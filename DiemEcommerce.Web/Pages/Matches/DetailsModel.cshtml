@@ -1,0 +1,294 @@
+@page "{id:guid}"
+@model DiemEcommerce.Web.Pages.Matches.DetailsModel
+@{
+ViewData["Title"] = Model.Match?.Name ?? "Match Details";
+}
+
+<div class="container mx-auto py-8">
+    @if (Model.Match != null)
+    {
+    <nav class="flex mb-6 text-sm">
+        <a asp-page="/Index" class="text-gray-500 hover:text-primary">Home</a>
+        <span class="mx-2 text-gray-400">/</span>
+        <a asp-page="/Matches/Index" class="text-gray-500 hover:text-primary">Matches</a>
+        <span class="mx-2 text-gray-400">/</span>
+        <span class="text-gray-900">@Model.Match.Name</span>
+    </nav>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Match Images -->
+        <div>
+            @if (Model.Match.CoverImages.Any())
+            {
+            <div x-data="{ activeImage: '@Model.Match.CoverImages.First().Url' }">
+                <div class="aspect-square overflow-hidden rounded-lg mb-4">
+                    <img :src="activeImage" alt="@Model.Match.Name" class="w-full h-full object-cover">
+                </div>
+
+                @if (Model.Match.CoverImages.Count() > 1)
+                {
+                <div class="grid grid-cols-5 gap-2">
+                    @foreach (var image in Model.Match.CoverImages)
+                    {
+                    <button
+                        @@click="activeImage = '@image.Url'"
+                        class="aspect-square overflow-hidden rounded border hover:border-primary"
+                        :class="{'border-primary': activeImage === '@image.Url', 'border-gray-200': activeImage !== '@image.Url'}">
+                        <img src="@image.Url" alt="@Model.Match.Name" class="w-full h-full object-cover">
+                    </button>
+                    }
+                </div>
+                }
+            </div>
+            }
+            else
+            {
+            <div class="aspect-square bg-gray-200 rounded-lg flex items-center justify-center">
+                <span class="text-gray-500">No image available</span>
+            </div>
+            }
+        </div>
+
+        <!-- Match Details -->
+        <div>
+            <h1 class="text-3xl font-bold mb-2">@Model.Match.Name</h1>
+            <div class="mb-4">
+                <a asp-page="/Factories/Details" asp-route-id="@Model.Match.FactoryId" class="text-primary hover:underline">
+                    @Model.Match.FactoryName
+                </a>
+            </div>
+
+            <div class="text-2xl font-bold text-primary mb-6">$@Model.Match.Price</div>
+
+            <div class="prose mb-8">
+                <h3 class="text-lg font-medium mb-2">Description</h3>
+                <p>@Model.Match.Description</p>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="text-lg font-medium mb-2">Availability</h3>
+                @if (Model.Match.Quantity > 10)
+                {
+                <div class="flex items-center text-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-1">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>In Stock (@Model.Match.Quantity available)</span>
+                </div>
+                }
+                else if (Model.Match.Quantity > 0)
+                {
+                <div class="flex items-center text-warning">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-1">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                    </svg>
+                    <span>Low Stock (Only @Model.Match.Quantity left)</span>
+                </div>
+                }
+                else
+                {
+                <div class="flex items-center text-danger">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-1">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                    </svg>
+                    <span>Out of Stock</span>
+                </div>
+                }
+            </div>
+
+            <!-- Add to Cart Form -->
+            <form method="post" class="mb-8">
+                <div class="flex items-center mb-4">
+                    <label for="quantity" class="mr-4 font-medium">Quantity:</label>
+                    <div class="flex items-center border border-gray-300 rounded-md">
+                        <button type="button" class="px-3 py-1 bg-gray-100 border-r border-gray-300"
+                                onclick="decrementQuantity()">-</button>
+                        <input type="number" id="quantity" name="quantity" value="1" min="1" max="@Model.Match.Quantity"
+                               class="w-16 text-center border-none focus:ring-0"
+                               readonly />
+                        <button type="button" class="px-3 py-1 bg-gray-100 border-l border-gray-300"
+                                onclick="incrementQuantity()">+</button>
+                    </div>
+                </div>
+
+                <input type="hidden" name="matchId" value="@Model.Match.Id" />
+                <button type="submit" class="btn btn-primary w-full @(Model.Match.Quantity <= 0 ? "opacity-50 cursor-not-allowed" : "")"
+                        asp-page-handler="AddToCart"
+                        @(Model.Match.Quantity <= 0 ? "disabled" : "")>
+                    @if (Model.Match.Quantity <= 0)
+                    {
+                    <span>Out of Stock</span>
+                    }
+                    else
+                    {
+                    <span>Add to Cart</span>
+                    }
+                </button>
+            </form>
+
+            <!-- Factory Info -->
+            <div>
+                <h3 class="text-lg font-medium mb-2">Factory Information</h3>
+                <div class="card">
+                    <div class="p-4 flex items-center">
+                        <img src="@Model.Match.FactoryLogo" alt="@Model.Match.FactoryName" class="w-12 h-12 object-cover rounded-full mr-4">
+                        <div>
+                            <h4 class="font-medium">@Model.Match.FactoryName</h4>
+                            <p class="text-sm text-gray-600">@Model.Match.FactoryAddress</p>
+                        </div>
+                        <a asp-page="/Factories/Details" asp-route-id="@Model.Match.FactoryId" class="ml-auto btn btn-sm btn-outline-primary">
+                            View Factory
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews/Feedback Section -->
+    @if (Model.Feedbacks != null)
+    {
+    <div class="mt-12">
+        <h2 class="text-2xl font-bold mb-6">Customer Reviews</h2>
+
+        @if (Model.Feedbacks.Items.Any())
+        {
+        <div class="space-y-6">
+            @foreach (var feedback in Model.Feedbacks.Items)
+            {
+            <div class="card">
+                <div class="card-body">
+                    <div class="flex items-start mb-4">
+                        <div class="flex-shrink-0">
+                            <div class="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-primary font-medium">
+                                @feedback.CustomerName[0]
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="font-medium">@feedback.CustomerName</h4>
+                            <div class="flex items-center mt-1">
+                                @for (var i = 1; i <= 5; i++)
+                                {
+                                if (i <= feedback.Rating)
+                                {
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-yellow-400">
+                                    <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+                                </svg>
+                                }
+                                else
+                                {
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-300">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                                </svg>
+                                }
+                                }
+                                <span class="text-sm text-gray-500 ml-2">@feedback.CreatedOnUtc.ToString("MMM dd, yyyy")</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="mb-4">@feedback.Comment</p>
+
+                    @if (feedback.Images.Any())
+                    {
+                    <div class="grid grid-cols-5 gap-2">
+                        @foreach (var image in feedback.Images)
+                        {
+                        <div class="aspect-square overflow-hidden rounded">
+                            <img src="@image.Url" alt="Review image" class="w-full h-full object-cover">
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        @if (Model.Feedbacks.TotalPages > 1)
+        {
+        <div class="flex justify-center mt-8">
+            <div class="inline-flex rounded-md shadow-sm">
+                @if (Model.Feedbacks.HasPreviousPage)
+                {
+                <a href="@Url.Page("./Details", new { id = Model.Match.Id, pageIndex = Model.Feedbacks.PageIndex - 1 })"
+                   class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50">
+                    Previous
+                </a>
+                }
+                else
+                {
+                <span class="px-4 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-300 rounded-l-md">
+                                        Previous
+                                    </span>
+                }
+
+                <span class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border-t border-b border-gray-300">
+                                    Page @Model.Feedbacks.PageIndex of @Model.Feedbacks.TotalPages
+                                </span>
+
+                @if (Model.Feedbacks.HasNextPage)
+                {
+                <a href="@Url.Page("./Details", new { id = Model.Match.Id, pageIndex = Model.Feedbacks.PageIndex + 1 })"
+                   class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50">
+                    Next
+                </a>
+                }
+                else
+                {
+                <span class="px-4 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-300 rounded-r-md">
+                                        Next
+                                    </span>
+                }
+            </div>
+        </div>
+        }
+        }
+        else
+        {
+        <div class="card">
+            <div class="card-body text-center py-12">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto text-gray-400 mb-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                </svg>
+                <h3 class="text-xl font-medium mb-2">No reviews yet</h3>
+                <p class="text-gray-500">Be the first to review this product!</p>
+            </div>
+        </div>
+        }
+    </div>
+    }
+    }
+    else
+    {
+    <div class="text-center py-12">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto text-gray-400 mb-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+        </svg>
+        <h2 class="text-2xl font-bold mb-2">Match not found</h2>
+        <p class="text-gray-500 mb-4">The match you're looking for doesn't exist or has been removed.</p>
+        <a asp-page="/Matches/Index" class="btn btn-primary">Browse all matches</a>
+    </div>
+    }
+</div>
+
+@section Scripts {
+<script>
+    function decrementQuantity() {
+        const input = document.getElementById('quantity');
+        const currentValue = parseInt(input.value);
+        if (currentValue > 1) {
+            input.value = currentValue - 1;
+        }
+    }
+
+    function incrementQuantity() {
+        const input = document.getElementById('quantity');
+        const currentValue = parseInt(input.value);
+        const maxValue = parseInt(input.getAttribute('max'));
+        if (currentValue < maxValue) {
+            input.value = currentValue + 1;
+        }
+    }
+</script>
+}

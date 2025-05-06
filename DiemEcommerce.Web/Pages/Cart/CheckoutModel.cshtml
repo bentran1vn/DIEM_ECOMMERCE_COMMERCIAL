@@ -1,0 +1,136 @@
+@page
+@model DiemEcommerce.Web.Pages.Cart.CheckoutModel
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Checkout</h1>
+
+    @if (Model.Cart.Items.Any())
+    {
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Checkout Form -->
+            <div class="lg:col-span-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="font-medium">Shipping Information</h2>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" id="checkout-form">
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+                            
+                            <div class="mb-4">
+                                <label asp-for="CheckoutDetails.Email" class="form-label">Email</label>
+                                <input asp-for="CheckoutDetails.Email" class="form-input" type="email" />
+                                <span asp-validation-for="CheckoutDetails.Email" class="form-error"></span>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label asp-for="CheckoutDetails.Phone" class="form-label">Phone</label>
+                                <input asp-for="CheckoutDetails.Phone" class="form-input" type="tel" />
+                                <span asp-validation-for="CheckoutDetails.Phone" class="form-error"></span>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label asp-for="CheckoutDetails.Address" class="form-label">Shipping Address</label>
+                                <textarea asp-for="CheckoutDetails.Address" class="form-input" rows="3"></textarea>
+                                <span asp-validation-for="CheckoutDetails.Address" class="form-error"></span>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label asp-for="CheckoutDetails.Note" class="form-label">Order Notes (Optional)</label>
+                                <textarea asp-for="CheckoutDetails.Note" class="form-input" rows="2"></textarea>
+                                <span asp-validation-for="CheckoutDetails.Note" class="form-error"></span>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">Payment Method</label>
+                                <div class="space-y-2">
+                                    <div class="flex items-center">
+                                        <input asp-for="CheckoutDetails.IsQrPayment" type="radio" value="false" id="payment-wallet" class="mr-2" checked />
+                                        <label for="payment-wallet">Pay with Wallet Balance</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input asp-for="CheckoutDetails.IsQrPayment" type="radio" value="true" id="payment-qr" class="mr-2" />
+                                        <label for="payment-qr">Pay with QR Code</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="lg:col-span-1">
+                <div class="card sticky top-20">
+                    <div class="card-header">
+                        <h2 class="font-medium">Order Summary</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="max-h-60 overflow-y-auto mb-4">
+                            @foreach (var item in Model.Cart.Items)
+                            {
+                                <div class="flex items-center mb-3">
+                                    <div class="w-12 h-12 rounded overflow-hidden flex-shrink-0">
+                                        <img src="@item.ImageUrl" alt="@item.Name" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="ml-3 flex-grow">
+                                        <h3 class="text-sm font-medium truncate">@item.Name</h3>
+                                        <div class="text-xs text-gray-500">@item.Quantity × $@item.Price.ToString("0.00")</div>
+                                    </div>
+                                    <div class="text-sm font-medium">$@item.Total.ToString("0.00")</div>
+                                </div>
+                            }
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex justify-between">
+                                <span>Subtotal</span>
+                                <span>$@Model.Cart.TotalPrice.ToString("0.00")</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Shipping</span>
+                                <span>Free</span>
+                            </div>
+                            <div class="border-t pt-4 flex justify-between font-bold">
+                                <span>Total</span>
+                                <span>$@Model.Cart.TotalPrice.ToString("0.00")</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <button type="submit" form="checkout-form" class="btn btn-primary w-full">
+                                Place Order
+                            </button>
+                        </div>
+                        
+                        <div class="mt-4 text-center">
+                            <a asp-page="/Cart/Index" class="text-primary hover:underline text-sm">
+                                Return to Cart
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body text-center py-12">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto text-gray-400 mb-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                </svg>
+                <h2 class="text-2xl font-bold mb-2">Your cart is empty</h2>
+                <p class="text-gray-500 mb-4">You need to add items to your cart before checking out.</p>
+                <a asp-page="/Matches/Index" class="btn btn-primary">Shop Now</a>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

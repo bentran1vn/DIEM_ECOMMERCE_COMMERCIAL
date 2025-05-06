@@ -1,0 +1,145 @@
+@page
+@model DiemEcommerce.Web.Pages.Orders.IndexModel
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">My Orders</h1>
+
+    @if (Model.Orders != null && Model.Orders.Items.Any())
+    {
+        <div class="grid grid-cols-1 gap-6">
+            @foreach (var order in Model.Orders.Items)
+            {
+                <div class="card">
+                    <div class="card-header flex items-center justify-between">
+                        <div>
+                            <h2 class="font-medium">Order #@order.Id</h2>
+                            <p class="text-sm text-gray-500">Placed on @order.CreatedOnUtc.ToString("MMM dd, yyyy")</p>
+                        </div>
+                        <div>
+                            @if (order.Status == "Pending")
+                            {
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    Pending
+                                </span>
+                            }
+                            else if (order.Status == "Success" || order.Status == "Confirmed")
+                            {
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    @order.Status
+                                </span>
+                            }
+                            else if (order.Status == "Cancelled")
+                            {
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    Cancelled
+                                </span>
+                            }
+                            else if (order.Status == "Shipping")
+                            {
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    Shipping
+                                </span>
+                            }
+                            else if (order.Status == "Delivered")
+                            {
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Delivered
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    @order.Status
+                                </span>
+                            }
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Shipping Address</p>
+                                <p>@order.Address</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-gray-500">Total</p>
+                                <p class="font-bold text-primary">$@order.TotalPrice.ToString("0.00")</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between">
+                            <a asp-page="./Details" asp-route-id="@order.Id" class="btn btn-outline-primary">
+                                View Details
+                            </a>
+                            
+                            @if (order.Status == "Pending" || order.Status == "Confirmed")
+                            {
+                                <form method="post">
+                                    <input type="hidden" name="orderId" value="@order.Id">
+                                    <button type="submit" asp-page-handler="CancelOrder" class="btn btn-outline-danger"
+                                            onclick="return confirm('Are you sure you want to cancel this order?')">
+                                        Cancel Order
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        
+        <!-- Pagination -->
+        @if (Model.Orders.TotalPages > 1)
+        {
+            <div class="flex justify-center mt-8">
+                <div class="inline-flex rounded-md shadow-sm">
+                    @if (Model.Orders.HasPreviousPage)
+                    {
+                        <a href="@Url.Page("./Index", new { pageIndex = Model.Orders.PageIndex - 1, status = Model.SelectedStatus })" 
+                           class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50">
+                            Previous
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="px-4 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-300 rounded-l-md">
+                            Previous
+                        </span>
+                    }
+                    
+                    <span class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border-t border-b border-gray-300">
+                        Page @Model.Orders.PageIndex of @Model.Orders.TotalPages
+                    </span>
+                    
+                    @if (Model.Orders.HasNextPage)
+                    {
+                        <a href="@Url.Page("./Index", new { pageIndex = Model.Orders.PageIndex + 1, status = Model.SelectedStatus })" 
+                           class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50">
+                            Next
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="px-4 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-300 rounded-r-md">
+                            Next
+                        </span>
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body text-center py-12">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto text-gray-400 mb-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                </svg>
+                <h2 class="text-2xl font-bold mb-2">No orders found</h2>
+                <p class="text-gray-500 mb-4">You haven't placed any orders yet.</p>
+                <a asp-page="/Matches/Index" class="btn btn-primary">Start Shopping</a>
+            </div>
+        </div>
+    }
+</div>

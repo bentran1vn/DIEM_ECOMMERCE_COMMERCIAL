@@ -1,134 +1,223 @@
 @page "{id:guid}"
 @model DiemEcommerce.Web.Pages.Orders.ConfirmationModel
 @{
-ViewData["Title"] = "Order Confirmation";
+    ViewData["Title"] = "Order Confirmation";
 }
 
 <div class="container mx-auto px-4 py-8">
     @if (Model.Order != null)
     {
-    <div class="max-w-3xl mx-auto">
-        <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-success/20 text-success rounded-full mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-10">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-green-100 text-green-600 rounded-full mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold mb-3">Thank You for Your Order!</h1>
+                <p class="text-lg text-gray-600 mb-1">Your order has been received and is being processed.</p>
+                <p class="text-gray-500">Order #@Model.Order.Id.ToString().Substring(0, 8).ToUpper()</p>
             </div>
-            <h1 class="text-3xl font-bold mb-2">Order Confirmed!</h1>
-            <p class="text-gray-600">Thank you for your purchase. Your order has been received.</p>
-        </div>
 
-        <div class="card mb-6">
-            <div class="card-header">
-                <h2 class="font-medium">Order Details</h2>
-            </div>
-            <div class="card-body">
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <p class="text-sm text-gray-500">Order Number</p>
-                        <p class="font-medium">@Model.Order.Id</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Date</p>
-                        <p class="font-medium">@Model.Order.CreatedOnUtc.ToString("MMM dd, yyyy")</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Total Amount</p>
-                        <p class="font-medium">$@Model.Order.TotalPrice.ToString("0.00")</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Status</p>
-                        <p class="font-medium">
-                            @if (Model.Order.Status == "Pending")
-                            {
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                        Pending
-                                    </span>
-                            }
-                            else if (Model.Order.Status == "Success")
-                            {
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        Success
-                                    </span>
-                            }
-                            else
-                            {
-                            <span>@Model.Order.Status</span>
-                            }
-                        </p>
+            <div class="card mb-8">
+                <div class="card-header flex justify-between items-center">
+                    <h2 class="font-medium">Order Status</h2>
+                    <span class="order-status-badge @GetStatusClass(Model.Order.Status)">
+                        @Model.Order.Status
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="flex flex-col md:flex-row items-start gap-8">
+                        <div class="flex-1">
+                            <h3 class="text-sm font-medium text-gray-500 mb-1">Ordered On</h3>
+                            <p class="font-medium">@Model.Order.CreatedOnUtc.ToString("MMM dd, yyyy hh:mm tt")</p>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-sm font-medium text-gray-500 mb-1">Order Total</h3>
+                            <p class="font-medium text-primary">$@Model.Order.TotalPrice.ToString("0.00")</p>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-sm font-medium text-gray-500 mb-1">Payment Method</h3>
+                            <p class="font-medium">@(Model.Order.IsQr ? "QR Code Payment" : "Wallet Balance")</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        @if (Model.Order.IsQr)
-        {
-        <div class="card mb-6">
-            <div class="card-header">
-                <h2 class="font-medium">Payment Information</h2>
-            </div>
-            <div class="card-body text-center">
-                <p class="mb-4">Please scan the QR code below to complete your payment.</p>
-                <img src="@Model.Order.QrUrl" alt="QR Code" class="mx-auto max-w-xs mb-4">
-                <div class="max-w-xs mx-auto bg-gray-50 p-4 rounded-lg">
-                    <div class="mb-2">
-                        <div class="text-sm text-gray-500">Bank Name</div>
-                        <div class="font-medium">@Model.Order.SystemBankName</div>
+            @if (Model.Order.IsQr)
+            {
+                <div class="card mb-8">
+                    <div class="card-header">
+                        <h2 class="font-medium">Payment Information</h2>
                     </div>
-                    <div class="mb-2">
-                        <div class="text-sm text-gray-500">Account Number</div>
-                        <div class="font-medium">@Model.Order.SystemBankAccount</div>
+                    <div class="card-body">
+                        <div class="flex flex-col md:flex-row items-center">
+                            <div class="mb-6 md:mb-0 md:mr-8">
+                                @if (!string.IsNullOrEmpty(Model.Order.QrUrl))
+                                {
+                                    <img src="@Model.Order.QrUrl" alt="QR Code" class="h-48 w-48 mx-auto">
+                                }
+                                else
+                                {
+                                    <div class="h-48 w-48 mx-auto bg-gray-100 flex items-center justify-center rounded">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-gray-400">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z" />
+                                        </svg>
+                                    </div>
+                                }
+                                <p class="text-center text-sm text-gray-500 mt-2">Scan with your banking app</p>
+                            </div>
+                            <div class="flex-1">
+                                <div class="bg-gray-50 p-5 rounded-lg">
+                                    <div class="mb-4">
+                                        <h3 class="text-sm font-medium text-gray-500 mb-1">Bank Name</h3>
+                                        <p class="font-medium">@(string.IsNullOrEmpty(Model.Order.SystemBankName) ? "MB Bank" : Model.Order.SystemBankName)</p>
+                                    </div>
+                                    <div class="mb-4">
+                                        <h3 class="text-sm font-medium text-gray-500 mb-1">Account Number</h3>
+                                        <div class="flex items-center">
+                                            <p class="font-medium mr-2" id="accountNumber">@(string.IsNullOrEmpty(Model.Order.SystemBankAccount) ? "0901928382" : Model.Order.SystemBankAccount)</p>
+                                            <button type="button" onclick="copyToClipboard('accountNumber')" class="text-primary hover:text-primary-dark text-sm">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <h3 class="text-sm font-medium text-gray-500 mb-1">Amount</h3>
+                                        <p class="font-medium text-primary">$@Model.Order.TotalPrice.ToString("0.00")</p>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-500 mb-1">Description/Reference</h3>
+                                        <div class="flex items-center">
+                                            <p class="font-medium mr-2" id="description">@(string.IsNullOrEmpty(Model.Order.SystemBankDescription) ? $"DiemOrder{Model.Order.Id.ToString().Substring(0, 8)}" : Model.Order.SystemBankDescription)</p>
+                                            <button type="button" onclick="copyToClipboard('description')" class="text-primary hover:text-primary-dark text-sm">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 text-center">
+                                    <p class="text-sm text-gray-500 italic">Please complete your payment within 24 hours</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="text-sm text-gray-500">Description</div>
-                        <div class="font-medium">@Model.Order.SystemBankDescription</div>
+                </div>
+            }
+
+            <div class="card mb-8">
+                <div class="card-header">
+                    <h2 class="font-medium">Shipping Information</h2>
+                </div>
+                <div class="card-body">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500 mb-1">Shipping Address</h3>
+                            <p class="whitespace-pre-line">@Model.Order.Address</p>
+                        </div>
+                        <div>
+                            <div class="mb-4">
+                                <h3 class="text-sm font-medium text-gray-500 mb-1">Contact Email</h3>
+                                <p>@Model.Order.Email</p>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-500 mb-1">Contact Phone</h3>
+                                <p>@Model.Order.Phone</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        }
 
-        <div class="card mb-6">
-            <div class="card-header">
-                <h2 class="font-medium">Shipping Information</h2>
-            </div>
-            <div class="card-body">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <p class="text-sm text-gray-500">Email</p>
-                        <p class="font-medium">@Model.Order.Email</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Phone</p>
-                        <p class="font-medium">@Model.Order.Phone</p>
-                    </div>
-                    <div class="md:col-span-2">
-                        <p class="text-sm text-gray-500">Address</p>
-                        <p class="font-medium">@Model.Order.Address</p>
-                    </div>
-                </div>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a asp-page="/Orders/Index" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                    </svg>
+                    View All Orders
+                </a>
+                <a asp-page="/Matches/Index" class="btn btn-outline-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                    </svg>
+                    Continue Shopping
+                </a>
             </div>
         </div>
-
-        <div class="text-center">
-            <div class="space-x-4">
-                <a asp-page="/Orders/Index" class="btn btn-primary">View All Orders</a>
-                <a asp-page="/Index" class="btn btn-outline-primary">Continue Shopping</a>
-            </div>
-        </div>
-    </div>
     }
     else
     {
-    <div class="card max-w-3xl mx-auto">
-        <div class="card-body text-center py-12">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto text-gray-400 mb-4">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-            </svg>
-            <h2 class="text-2xl font-bold mb-2">Order not found</h2>
-            <p class="text-gray-500 mb-4">The order you're looking for doesn't exist or has been removed.</p>
-            <a asp-page="/Orders/Index" class="btn btn-primary">View Your Orders</a>
+        <div class="max-w-3xl mx-auto">
+            <div class="card">
+                <div class="card-body text-center py-16">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-20 h-20 mx-auto text-gray-400 mb-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                    </svg>
+                    <h2 class="text-2xl font-bold mb-4">Order not found</h2>
+                    <p class="text-gray-500 mb-8 max-w-md mx-auto">The order you're looking for doesn't exist or has been removed.</p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                        <a asp-page="/Orders/Index" class="btn btn-primary">View Your Orders</a>
+                        <a asp-page="/Index" class="btn btn-outline-primary">Return to Home</a>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
     }
 </div>
+
+@section Scripts {
+    <script>
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                // Create a tooltip
+                const tooltip = document.createElement('div');
+                tooltip.textContent = 'Copied!';
+                tooltip.className = 'absolute bg-gray-800 text-white text-xs rounded py-1 px-2 -mt-8 opacity-0 transition-opacity duration-200';
+                element.parentNode.style.position = 'relative';
+                element.parentNode.appendChild(tooltip);
+                
+                // Show tooltip
+                setTimeout(() => {
+                    tooltip.classList.add('opacity-100');
+                }, 50);
+                
+                // Hide and remove tooltip
+                setTimeout(() => {
+                    tooltip.classList.remove('opacity-100');
+                    setTimeout(() => {
+                        element.parentNode.removeChild(tooltip);
+                    }, 200);
+                }, 1500);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+    </script>
+}
+
+@functions {
+    string GetStatusClass(string status)
+    {
+        return status?.ToLower() switch
+        {
+            "pending" => "bg-yellow-100 text-yellow-800",
+            "success" => "bg-green-100 text-green-800",
+            "confirmed" => "bg-green-100 text-green-800",
+            "preparing" => "bg-blue-100 text-blue-800",
+            "shipping" => "bg-blue-100 text-blue-800",
+            "delivered" => "bg-green-100 text-green-800",
+            "cancelled" => "bg-red-100 text-red-800",
+            "failed" => "bg-red-100 text-red-800",
+            _ => "bg-gray-100 text-gray-800"
+        };
+    }
+}
+

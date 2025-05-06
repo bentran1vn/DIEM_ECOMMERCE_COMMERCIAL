@@ -27,7 +27,7 @@ public class LogoutModel : PageModel
     {
         // Get the user account identifier from claims
         var userAccount = User.FindFirstValue(ClaimTypes.Name);
-        
+    
         if (!string.IsNullOrEmpty(userAccount))
         {
             // Call logout API
@@ -36,11 +36,34 @@ public class LogoutModel : PageModel
 
         // Remove authentication cookie
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        
-        // Clear cookies
+    
+        // Try multiple cookie deletion approaches
+        // 1. Basic deletion
         Response.Cookies.Delete("AccessToken");
         Response.Cookies.Delete("RefreshToken");
-
-        return RedirectToPage("/Index");
+    
+        // 2. With path
+        Response.Cookies.Delete("AccessToken", new CookieOptions { Path = "/" });
+        Response.Cookies.Delete("RefreshToken", new CookieOptions { Path = "/" });
+    
+        // 3. Overwrite with expired cookies
+        Response.Cookies.Append("AccessToken", "", new CookieOptions { 
+            Expires = DateTime.Now.AddDays(-1),
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Path = "/"
+        });
+    
+        Response.Cookies.Append("RefreshToken", "", new CookieOptions { 
+            Expires = DateTime.Now.AddDays(-1),
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Path = "/"
+        });
+    
+        // Direct redirect to home page
+        return Redirect("~/");
     }
 }

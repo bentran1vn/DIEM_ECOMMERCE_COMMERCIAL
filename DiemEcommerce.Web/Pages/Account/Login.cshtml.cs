@@ -66,7 +66,21 @@ public class LoginModel : PageModel
                 var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
                 var token = handler.ReadJwtToken(result.AccessToken);
 
-                // Create identity and sign in
+                // Check role - ONLY allow Customer role to proceed
+                var roleClaim = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+                if (roleClaim == null || roleClaim.Value != "Customer")
+                {
+                    // Add error for non-customer users
+                    ModelState.AddModelError(string.Empty, "This platform is for customers only. Please use the appropriate portal for your account type.");
+                    
+                    // Delete the tokens since we're rejecting this login
+                    Response.Cookies.Delete("AccessToken");
+                    Response.Cookies.Delete("RefreshToken");
+                    
+                    return Page();
+                }
+
+                // Continue with normal login for customers
                 var claims = token.Claims.ToList();
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var principal = new ClaimsPrincipal(identity);

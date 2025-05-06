@@ -1,19 +1,21 @@
 @page
 @model DiemEcommerce.Web.Pages.Account.RegisterModel
 @{
-    ViewData["Title"] = "Register";
+ViewData["Title"] = "Register";
 }
 
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-lg mx-auto">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-primary">Create Your Account</h1>
+            <p class="text-gray-600 mt-2">Join the Diem Ecommerce community</p>
+        </div>
+
         <div class="card">
-            <div class="card-header">
-                <h1 class="text-xl font-semibold">Create a New Account</h1>
-            </div>
-            <div class="card-body">
-                <form method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
-                    
+            <div class="card-body py-6">
+                <form method="post" id="registerForm">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-4 p-2 bg-red-50 rounded border-l-4 border-red-500 text-sm"></div>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label asp-for="Input.FirstName" class="form-label">First Name</label>
@@ -26,41 +28,70 @@
                             <span asp-validation-for="Input.LastName" class="form-error"></span>
                         </div>
                     </div>
-                    
+
                     <div class="mb-4">
                         <label asp-for="Input.Email" class="form-label">Email</label>
-                        <input asp-for="Input.Email" class="form-input" type="email" />
+                        <input asp-for="Input.Email" class="form-input" type="email" autocomplete="email" />
                         <span asp-validation-for="Input.Email" class="form-error"></span>
                     </div>
-                    
+
                     <div class="mb-4">
                         <label asp-for="Input.Username" class="form-label">Username</label>
-                        <input asp-for="Input.Username" class="form-input" />
+                        <input asp-for="Input.Username" class="form-input" autocomplete="username" />
                         <span asp-validation-for="Input.Username" class="form-error"></span>
                     </div>
-                    
+
                     <div class="mb-4">
                         <label asp-for="Input.PhoneNumber" class="form-label">Phone Number</label>
-                        <input asp-for="Input.PhoneNumber" class="form-input" type="tel" />
+                        <input asp-for="Input.PhoneNumber" class="form-input" type="tel" autocomplete="tel" />
                         <span asp-validation-for="Input.PhoneNumber" class="form-error"></span>
                     </div>
-                    
+
                     <div class="mb-4">
                         <label asp-for="Input.Password" class="form-label">Password</label>
-                        <input asp-for="Input.Password" class="form-input" type="password" />
+                        <div class="relative">
+                            <input asp-for="Input.Password" class="form-input pr-10" type="password" autocomplete="new-password" />
+                            <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 px-3 py-2 text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </button>
+                        </div>
                         <span asp-validation-for="Input.Password" class="form-error"></span>
+                        <div class="text-xs text-gray-500 mt-1">Password must be at least 6 characters long</div>
                     </div>
-                    
+
                     <div class="mb-6">
                         <label asp-for="Input.ConfirmPassword" class="form-label">Confirm Password</label>
-                        <input asp-for="Input.ConfirmPassword" class="form-input" type="password" />
+                        <div class="relative">
+                            <input asp-for="Input.ConfirmPassword" class="form-input pr-10" type="password" autocomplete="new-password" />
+                            <button type="button" id="toggleConfirmPassword" class="absolute inset-y-0 right-0 px-3 py-2 text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </button>
+                        </div>
                         <span asp-validation-for="Input.ConfirmPassword" class="form-error"></span>
                     </div>
-                    
-                    <div>
-                        <button type="submit" class="btn btn-primary w-full">Register</button>
+
+                    <div class="mb-6">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="terms" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded" required />
+                            <label for="terms" class="ml-2 block text-sm text-gray-700">
+                                I agree to the <a href="#" class="text-primary hover:underline">Terms of Service</a> and <a href="#" class="text-primary hover:underline">Privacy Policy</a>
+                            </label>
+                        </div>
                     </div>
-                    
+
+                    <div>
+                        <button type="submit" id="registerButton" class="btn btn-primary w-full">
+                            <span id="buttonText">Create Account</span>
+                            <span id="buttonSpinner" class="spinner ml-2 hidden"></span>
+                        </button>
+                    </div>
+
                     <div class="text-center mt-4">
                         <span class="text-gray-600">Already have an account?</span>
                         <a asp-page="./Login" class="text-primary hover:underline">Login here</a>
@@ -72,5 +103,45 @@
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+<partial name="_ValidationScriptsPartial" />
+<script>
+    // Toggle password visibility
+    function setupPasswordToggle(buttonId, inputId) {
+        document.getElementById(buttonId).addEventListener('click', function() {
+            const passwordInput = document.getElementById(inputId);
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                this.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                        </svg>
+                    `;
+            } else {
+                passwordInput.type = 'password';
+                this.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    `;
+            }
+        });
+    }
+
+    setupPasswordToggle('togglePassword', 'Input_Password');
+    setupPasswordToggle('toggleConfirmPassword', 'Input_ConfirmPassword');
+
+    // Show loading spinner on form submit
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        if (!document.getElementById('terms').checked) {
+            e.preventDefault();
+            alert('You must accept the Terms of Service and Privacy Policy to continue.');
+            return false;
+        }
+
+        document.getElementById('buttonText').classList.add('hidden');
+        document.getElementById('buttonSpinner').classList.remove('hidden');
+        document.getElementById('registerButton').disabled = true;
+    });
+</script>
 }

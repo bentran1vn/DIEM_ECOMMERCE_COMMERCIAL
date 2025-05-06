@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="hidden md:block">
-                <img src="https://via.placeholder.com/600x400" alt="Diem Ecommerce" class="rounded-lg shadow-lg max-w-full h-auto">
+                <img src="https://assets.thehansindia.com/h-upload/2023/04/23/1348149-matchsticks.webp" alt="Diem Ecommerce" class="rounded-lg shadow-lg max-w-full h-auto">
             </div>
         </div>
     </div>
@@ -59,8 +59,8 @@
                                     </button>
                                 </form>
                             </div>
+                            <a asp-page="Matches/DetailsModel" asp-route-id="@match.Id" class="text-primary hover:underline text-sm font-medium">View details →</a>
                         </div>
-                        <a asp-page="/Matches/Details" asp-route-id="@match.Id" class="absolute inset-0" aria-label="View details"></a>
                     </div>
                 }
             </div>
@@ -95,7 +95,7 @@
                         <div class="p-4">
                             <h3 class="font-semibold text-lg mb-1">@factory.Name</h3>
                             <p class="text-gray-600 text-sm mb-3 line-clamp-2">@factory.Description</p>
-                            <a asp-page="/Factories/Details" asp-route-id="@factory.Id" class="text-primary hover:underline text-sm font-medium">View Products →</a>
+                            <a asp-page="Matches/MatchFactoryModel" asp-route-id="@factory.Id" class="text-primary hover:underline text-sm font-medium">View Products →</a>
                         </div>
                     </div>
                 }

@@ -41,6 +41,6 @@ public class FactoryService : IFactoryService
 
     public async Task<FactoryDetailViewModel?> GetFactoryByIdAsync(Guid id)
     {
-        return await _apiHelper.GetAsync<FactoryDetailViewModel>($"factories/{id}");
+        return (await _apiHelper.GetAsync<ApiResponse<FactoryDetailViewModel>>($"factories/{id}")).Value;
     }
 }

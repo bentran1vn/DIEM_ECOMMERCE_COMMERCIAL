@@ -55,6 +55,6 @@ public class MatchService : IMatchService
 
     public async Task<PaginatedList<MatchViewModel>?> GetMatchesByFactoryIdAsync(Guid factoryId)
     {
-        return await _apiHelper.GetAsync<PaginatedList<MatchViewModel>>($"factories/{factoryId}/matches");
+        return (await _apiHelper.GetAsync<ApiResponse<PaginatedList<MatchViewModel>>>($"factories/{factoryId}/matches")).Value;
     }
 }

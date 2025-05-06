@@ -157,7 +157,11 @@ ViewData["Title"] = Model.Match?.Name ?? "Match Details";
                     }
                 </div>
                 <div class="col-span-1 flex items-center justify-center">
-                    <a asp-page="./FactoryModel" asp-route-id="@Model.Match.FactoryId" class="" aria-label="View details"></a>
+                    <a asp-page="./MatchFactoryModel" asp-route-id="@Model.Match.FactoryId" class="" aria-label="View details">
+                        <div class="flex items-center hover:text-primary transition duration-300 bg-blue-600 rounded-md p-4">
+                            <span class="text-sm hover:text-gray-300 text-white">View Details</span>
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -168,26 +172,26 @@ ViewData["Title"] = Model.Match?.Name ?? "Match Details";
         <h3 class="text-xl font-bold mb-6">Customer Reviews</h3>
         @if (Model.Match.Feedbacks.Any())
         {
-        @foreach (var feedback in Model.Match.Feedbacks)
-        {
-        <div class="mb-6 p-4 border rounded-lg shadow-sm bg-white">
-            <div class="flex items-center mb-2">
-                <div class="mr-3">
-                    <img src="@feedback.ProductImage" alt="@feedback.CustomerName" class="w-12 h-12 rounded-full border-2 border-gray-200">
-                </div>
-                <div>
-                    <h5 class="font-medium">@feedback.CustomerName</h5>
-                    <div class="text-yellow-500 flex">
-                        @for (int i = 0; i < feedback.Rating; i++)
-                        {
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-5 h-5" viewBox="0 0 20 20"><path d="M10 15.27l6.18 3.73-1.64-7.03 5.45-4.73-7.19-.61L10 0 8.2 7.63l-7.19.61 5.45 4.73-1.64 7.03L10 15.27z"></path></svg>
-                        }
+            @foreach (var feedback in Model.Match.Feedbacks)
+            {
+                <div class="mb-6 p-4 border rounded-lg shadow-sm bg-white">
+                    <div class="flex items-center mb-2">
+                        <div class="mr-3">
+                            <img src="@feedback.ProductImage" alt="@feedback.CustomerName" class="w-12 h-12 rounded-full border-2 border-gray-200">
+                        </div>
+                        <div>
+                            <h5 class="font-medium">@feedback.CustomerName</h5>
+                            <div class="text-yellow-500 flex">
+                                @for (int i = 0; i < feedback.Rating; i++)
+                                {
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-5 h-5" viewBox="0 0 20 20"><path d="M10 15.27l6.18 3.73-1.64-7.03 5.45-4.73-7.19-.61L10 0 8.2 7.63l-7.19.61 5.45 4.73-1.64 7.03L10 15.27z"></path></svg>
+                                }
+                            </div>
+                        </div>
                     </div>
+                    <p class="text-gray-600">@feedback.Comment</p>
                 </div>
-            </div>
-            <p class="text-gray-600">@feedback.Comment</p>
-        </div>
-        }
+            }
         }
         else
         {

@@ -1,0 +1,179 @@
+@page "{id:guid}"
+@model DiemEcommerce.Web.Pages.Matches.MatchFactoryModel
+
+@{
+ViewData["Title"] = "Factory Details";
+}
+
+<div class="container mx-auto py-8">
+    <!-- Factory Information Section -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        @if (Model.Factory == null)
+        {
+        <div class="text-center py-8">
+            <h2 class="text-2xl font-bold text-gray-700">Factory information not available</h2>
+            <p class="mt-2 text-gray-500">The requested factory could not be found.</p>
+        </div>
+        }
+        else
+        {
+        <div class="flex flex-col md:flex-row">
+            <div class="md:w-1/3 mb-4 md:mb-0">
+                @if (!string.IsNullOrEmpty(Model.Factory.Logo))
+                {
+                <img src="@Model.Factory.Logo" alt="@Model.Factory.Name" class="w-full h-auto rounded-lg object-cover shadow-sm">
+                }
+                else
+                {
+                <div class="bg-gray-200 w-full h-48 rounded-lg flex items-center justify-center">
+                    <span class="text-gray-500">No image available</span>
+                </div>
+                }
+            </div>
+            <div class="md:w-2/3 md:pl-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">@Model.Factory.Name</h1>
+
+                <div class="mb-4">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-2">Description</h2>
+                    <p class="text-gray-600">@(Model.Factory.Description ?? "No description available")</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Contact Information</h3>
+                        <p class="text-gray-700">@(Model.Factory.PhoneNumber ?? "N/A")</p>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Location</h3>
+                        <p class="text-gray-700">@(Model.Factory.Address ?? "N/A")</p>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Established</h3>
+                        <p class="text-gray-700">@(Model.Factory.CreatedOnUtc.ToString("MMM dd, yyyy"))</p>
+                    </div>
+                </div>
+
+                <div class="flex mt-4">
+                    <a asp-page="./Index" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        Back to Matches
+                    </a>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <!-- Matchsticks Section -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">Matchsticks Produced</h2>
+        </div>
+
+        @if (Model.Matches == null || !Model.Matches.Items.Any())
+        {
+        <div class="text-center py-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+            </div>
+            <h3 class="text-xl font-medium text-gray-700 mb-1">No matchsticks found</h3>
+            <p class="text-gray-500">This factory has no matchsticks in the database yet.</p>
+        </div>
+        }
+        else
+        {
+        <!-- Card Layout for Matchsticks -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            @foreach (var match in Model.Matches.Items)
+            {
+            <div class="bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                <!-- Product Image -->
+                <div class="h-48 w-full bg-gray-100 relative overflow-hidden">
+                    @if (!string.IsNullOrEmpty(match.CoverImages.FirstOrDefault()?.Url))
+                    {
+                    <img src="@match.CoverImages.FirstOrDefault()?.Url" alt="@match.Name" class="w-full h-full object-cover">
+                    }
+                    else
+                    {
+                    <div class="w-full h-full flex items-center justify-center bg-gray-200">
+                        <span class="text-gray-500">No image</span>
+                    </div>
+                    }
+                    <div class="absolute top-2 right-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">@match.CategoryName</span>
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="p-4">
+                    <h3 class="text-lg font-medium text-gray-900 truncate">@match.Name</h3>
+                    <p class="text-sm text-gray-500 mb-2">ID: @match.Id.ToString().Substring(0, 8)</p>
+
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="text-lg font-semibold text-gray-900">$@match.Price.ToString("F2")</div>
+                        <div class="text-sm text-gray-600">Stock: @match.Quantity</div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-2">
+                        <a href="/matches/details/@match.Id" class="flex-1 inline-flex justify-center items-center px-3 py-2 bg-blue-50 text-blue-700 text-sm font-medium rounded-md hover:bg-blue-100 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            View
+                        </a>
+                        <a href="/matches/edit/@match.Id" class="flex-1 inline-flex justify-center items-center px-3 py-2 bg-indigo-50 text-indigo-700 text-sm font-medium rounded-md hover:bg-indigo-100 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Edit
+                        </a>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        @if (Model.Matches.TotalPages > 1)
+        {
+        <div class="flex justify-center mt-8">
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                @if (Model.Matches.HasPreviousPage)
+                {
+                <a href="/matches/factory/@Model.Factory?.Id?pageIndex=@(Model.Matches.PageIndex - 1)" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <span class="sr-only">Previous</span>
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </a>
+                }
+
+                @for (var i = 1; i <= Model.Matches.TotalPages; i++)
+                {
+                <a href="/matches/factory/@Model.Factory?.Id?pageIndex=@i"
+                   class="relative inline-flex items-center px-4 py-2 border border-gray-300 @(i == Model.Matches.PageIndex ? "bg-blue-50 text-blue-600" : "bg-white text-gray-500") text-sm font-medium hover:bg-gray-50">
+                    @i
+                </a>
+                }
+
+                @if (Model.Matches.HasNextPage)
+                {
+                <a href="/matches/factory/@Model.Factory?.Id?pageIndex=@(Model.Matches.PageIndex + 1)" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <span class="sr-only">Next</span>
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </a>
+                }
+            </nav>
+        </div>
+        }
+        }
+    </div>
+</div>

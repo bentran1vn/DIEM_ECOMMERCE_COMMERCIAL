@@ -77,35 +77,36 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach (var match in Model.Matches.Items)
                     {
-                        <div class="card hover:shadow-lg transition-shadow">
-                            <div class="relative aspect-square overflow-hidden">
-                                @if (match.CoverImages.Any())
-                                {
+                        <a asp-page="./DetailsModel" asp-route-id="@match.Id" class="" aria-label="View details">
+                            <div class="card hover:shadow-lg transition-shadow">
+                                <div class="relative aspect-square overflow-hidden">
+                                    @if (match.CoverImages.Any())
+                                    {
                                     <img src="@match.CoverImages.First().Url" alt="@match.Name" class="w-full h-full object-cover">
-                                }
-                                else
-                                {
+                                    }
+                                    else
+                                    {
                                     <div class="w-full h-full bg-gray-200 flex items-center justify-center">
                                         <span class="text-gray-500">No image</span>
                                     </div>
-                                }
-                            </div>
-                            <div class="p-4">
-                                <h3 class="font-semibold text-lg mb-1 truncate">@match.Name</h3>
-                                <p class="text-gray-500 text-sm mb-2">@match.FactoryName</p>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-primary font-bold">$@match.Price</span>
-                                    <form method="post" asp-page-handler="AddToCart" asp-route-matchId="@match.Id">
-                                        <button type="submit" class="btn btn-sm btn-outline-primary">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
-                                            </svg>
-                                        </button>
-                                    </form>
+                                    }
+                                </div>
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-lg mb-1 truncate">@match.Name</h3>
+                                    <p class="text-gray-500 text-sm mb-2">@match.FactoryName</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-primary font-bold">$@match.Price</span>
+                                        <form method="post" asp-page-handler="AddToCart" asp-route-matchId="@match.Id">
+                                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                            <a asp-page="./Details" asp-route-id="@match.Id" class="absolute inset-0" aria-label="View details"></a>
-                        </div>
+                        </a>
                     }
                 </div>
                 

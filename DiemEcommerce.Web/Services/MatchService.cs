@@ -49,7 +49,8 @@ public class MatchService : IMatchService
 
     public async Task<MatchDetailViewModel?> GetMatchByIdAsync(Guid id)
     {
-        return await _apiHelper.GetAsync<MatchDetailViewModel>($"matches/{id}");
+        var response = await _apiHelper.GetAsync<ApiResponse<MatchDetailViewModel>>($"matches/{id}");
+        return response.Value; 
     }
 
     public async Task<PaginatedList<MatchViewModel>?> GetMatchesByFactoryIdAsync(Guid factoryId)

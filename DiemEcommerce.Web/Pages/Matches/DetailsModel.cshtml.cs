@@ -24,7 +24,6 @@ public class DetailsModel : PageModel
     }
 
     public MatchDetailViewModel? Match { get; set; }
-    public PaginatedList<FeedbackViewModel>? Feedbacks { get; set; }
 
     public async Task<IActionResult> OnGetAsync(Guid id, int pageIndex = 1)
     {
@@ -34,9 +33,6 @@ public class DetailsModel : PageModel
         {
             return Page();
         }
-
-        // Get feedback for this match
-        Feedbacks = await _feedbackService.GetFeedbackByProductAsync(id, pageIndex);
         
         return Page();
     }

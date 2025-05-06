@@ -22,8 +22,9 @@ public class FeedbackService : IFeedbackService
 
     public async Task<PaginatedList<FeedbackViewModel>?> GetFeedbackByProductAsync(Guid matchId, int pageIndex = 1, int pageSize = 10)
     {
-        return await _apiHelper.GetAsync<PaginatedList<FeedbackViewModel>>(
+        var response = await _apiHelper.GetAsync<ApiResponse<PaginatedList<FeedbackViewModel>>>(
             $"feedback?matchId={matchId}&pageIndex={pageIndex}&pageSize={pageSize}");
+        return response.Value;
     }
 
     public async Task<PaginatedList<FeedbackViewModel>?> GetFeedbackByCustomerAsync(int pageIndex = 1, int pageSize = 10)

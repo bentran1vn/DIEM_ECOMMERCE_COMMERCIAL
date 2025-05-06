@@ -60,6 +60,7 @@ public class CreateOrderResponseModel
     public decimal TotalPrice { get; set; }
     public string Status { get; set; } = string.Empty;
     public string QrUrl { get; set; } = string.Empty;
+    public bool IsQr { get; set; }
     public string SystemBankName { get; set; } = string.Empty;
     public string SystemBankAccount { get; set; } = string.Empty;
     public string SystemBankDescription { get; set; } = string.Empty;
